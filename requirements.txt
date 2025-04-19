@@ -1,0 +1,5 @@
+opencv-python-headless
+tensorflow
+deepface
+tf-keras
+flask

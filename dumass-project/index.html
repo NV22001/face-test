@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition</title>
+    <style>
+        video {
+            display: block;
+            margin: 0 auto;
+        }
+        .status {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Face Recognition</h1>
+    <video id="video" autoplay playsinline></video>
+    <p class="status" id="status">Status: Waiting...</p>
+
+    <script>
+        const video = document.getElementById("video");
+        const statusText = document.getElementById("status");
+
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                processFrames(stream);
+            } catch (err) {
+                console.error("Error accessing the camera:", err);
+                statusText.textContent = "Error: Could not access the camera.";
+            }
+        }
+
+        async function processFrames(stream) {
+            const canvas = document.createElement("canvas");
+            const context = canvas.getContext("2d");
+
+            setInterval(async () => {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                const dataUrl = canvas.toDataURL("image/jpeg");
+                const blob = await fetch(dataUrl).then(res => res.blob());
+
+                const formData = new FormData();
+                formData.append("frame", blob);
+
+                try {
+                    const response = await fetch("/process_frame", {
+                        method: "POST",
+                        body: formData
+                    });
+                    const result = await response.json();
+                    statusText.textContent = result.face_match ? "Status: MATCH!" : "Status: NO MATCH!";
+                } catch (err) {
+                    console.error("Error communicating with the backend:", err);
+                    statusText.textContent = "Error: Could not process frame.";
+                }
+            }, 1000); // Process a frame every second
+        }
+
+        startCamera();
+    </script>
+</body>
+</html>

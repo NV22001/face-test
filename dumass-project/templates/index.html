@@ -8,6 +8,8 @@
         video {
             display: block;
             margin: 0 auto;
+            width: 100%;
+            max-width: 640px;
         }
         .status {
             text-align: center;
@@ -16,13 +18,13 @@
             font-weight: bold;
         }
     </style>
-    
-    <!-- Link the JavaScript file -->
-    <script src="{{ url_for('/workspaces/face-test/dumass-project/static', filename='/workspaces/face-test/dumass-project/static/java.js') }}" defer></script>
-    
-    <body>
+</head>
+<body>
     <h1 style="text-align: center;">Face Recognition</h1>
     <video id="video" autoplay playsinline></video>
     <p class="status" id="status">Status: Waiting...</p>
+
+    <!-- Include the JavaScript file -->
+    <script src="{{ url_for('static', filename='js/java.js') }}"></script>
 </body>
 </html>

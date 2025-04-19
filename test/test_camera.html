@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Camera</title>
+    <style>
+        video {
+            display: block;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 640px;
+        }
+        .status {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Test Camera</h1>
+    <video id="video" autoplay playsinline></video>
+    <p class="status" id="status">Status: Waiting...</p>
+
+    <script>
+        const video = document.getElementById("video");
+        const statusText = document.getElementById("status");
+
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                video.play();
+                statusText.textContent = "Camera is active.";
+            } catch (err) {
+                console.error("Error accessing the camera:", err);
+                statusText.textContent = "Error: Could not access the camera. Please check your browser settings.";
+            }
+        }
+
+        startCamera();
+    </script>
+</body>
+</html>

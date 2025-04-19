@@ -1,5 +1,17 @@
+const video = document.getElementById("video");
+const statusText = document.getElementById("status");
 const canvas = document.createElement("canvas");
 const context = canvas.getContext("2d");
+
+async function startCamera() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+    } catch (err) {
+        console.error("Error accessing the camera:", err);
+        statusText.textContent = "Error: Could not access the camera.";
+    }
+}
 
 function captureFrameAndSend() {
     if (!video.videoWidth || !video.videoHeight) {
@@ -15,23 +27,18 @@ function captureFrameAndSend() {
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     // Convert the canvas to a data URL in JPEG format
-    const dataUrl = canvas.toDataURL("/workspaces/face-test/dumass-project/reference.jpg");
-    const blob = fetch(dataUrl).then((res) => res.blob());
-
-    // Create a FormData object and append the frame
-    blob.then((b) => {
+    canvas.toBlob((blob) => {
         const formData = new FormData();
-        formData.append("frame", b);
+        formData.append("frame", blob);
 
         // Send the frame to the backend
-        fetch("http://127.0.0.1:5000/process_frame", {
+        fetch("/process_frame", {
             method: "POST",
             body: formData,
         })
             .then((response) => response.json())
             .then((data) => {
                 console.log("Response from backend:", data);
-                const statusText = document.getElementById("status");
                 if (data.face_match) {
                     statusText.textContent = "Status: MATCH!";
                 } else {
@@ -40,11 +47,13 @@ function captureFrameAndSend() {
             })
             .catch((error) => {
                 console.error("Error:", error);
-                const statusText = document.getElementById("status");
                 statusText.textContent = "Error: Could not process frame.";
             });
-    });
+    }, "image/jpeg");
 }
 
-// Capture and send frames every 2 seconds
+// Start capturing frames every 2 seconds
 setInterval(captureFrameAndSend, 2000);
+
+// Start the camera when the page loads
+startCamera();

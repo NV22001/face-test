@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition</title>
+    <style>
+        video {
+            display: block;
+            margin: 0 auto;
+        }
+        .status {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+    
+    <!-- Link the JavaScript file -->
+    <script src="{{ url_for('/workspaces/face-test/dumass-project/static', filename='/workspaces/face-test/dumass-project/static/java.js') }}" defer></script>
+    
+    <body>
+    <h1 style="text-align: center;">Face Recognition</h1>
+    <video id="video" autoplay playsinline></video>
+    <p class="status" id="status">Status: Waiting...</p>
+</body>
+</html>
